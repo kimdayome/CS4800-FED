@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <title>NoPainNoGian CS4800</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&family=Poppins:wght@400;700&display=swap"
+      rel="stylesheet"
+   >
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  </head>
+  <body>
+    <header>
+      <div class="logo"><span class="accent">CS4800</span>NopainNogian</div>
+      <ul class="site menu">
+        <li class="active"><a href="/">Table View</a></li>
+        <li class="active"><a href="/team">Team Members</a></li>
+      </ul>
+    </header>
+    <main>
+      <section class="tables">
+        <div class="detail">
+          <div class="group-name">
+            <img class="group-logo" src="/static/logo.png" alt="Logo">
+            Facial Expression Detection Project
+          </div>
+        </div>
+        <ul class="categories">
+          <li class="category" id="all"><a href="/">All</a></li>
+          <li class="category" id="train"><a href="/train">Train</a></li>
+          <li class="category" id="test"><a href="/test">Test</a></li>
+        </ul>
+<table class="data-table">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Image Name</th>
+            <th>Image Usage</th>
+            <th>Tag</th>
+            <th>Path in S3 Storage</th>
+            <th>Image</th>  
+        </tr>
+    </thead>
+    <tbody>
+    {% for row in data %}
+    <tr>
+        <td>{{ row['id'] }}</td>
+        <td>{{ row['name'] }}</td>
+        <td>{{ row['usage'] }}</td>
+        <td class="tag">{{ row['tag'] }}</td>
+        <td>{{ row['s3key'] }}</td>
+        <td><img src="{{ row['image_url'] }}" alt="Image" style="height: 100px;"></td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<div class="pagination">
+    <a href="{{ url_for('train', page=1) }}">First</a>
+    {% if current_page > 1 %}
+    <a href="{{ url_for('train', page=current_page-1) }}">Previous</a>
+    {% endif %}
+
+    {% for i in range(left_index, right_index+1) %}
+    <a href="{{ url_for('train', page=i) }}" class="{% if i == current_page %}active{% endif %}">Page {{ i }}</a>
+    {% endfor %}
+
+    {% if current_page < total_pages %}
+    <a href="{{ url_for('train', page=current_page+1) }}">Next</a>
+    {% endif %}
+    <a href="{{ url_for('train', page=total_pages) }}">Last</a>
+</div>
+
+      </section>
+    </main>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Check if a saved category exists in local storage
+        const savedCategory = localStorage.getItem('selectedCategory');
+        if (savedCategory) {
+            const categoryElement = document.getElementById(savedCategory);
+            if (categoryElement) {
+                categoryElement.classList.add('active');
+            }
+        }
+
+        // Setup click event for each category
+        document.querySelectorAll('.category').forEach(item => {
+            item.addEventListener('click', function() {
+                // Remove 'active' class from all categories
+                document.querySelectorAll('.category').forEach(innerItem => {
+                    innerItem.classList.remove('active');
+                });
+
+                // Add 'active' class to the clicked item
+                item.classList.add('active');
+
+                // Save the clicked category in local storage
+                localStorage.setItem('selectedCategory', item.id);
+            });
+        });
+    });
+</script>
+
+  </body>
+</html>
